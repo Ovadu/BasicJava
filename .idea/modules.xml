@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BasicJava.iml" filepath="$PROJECT_DIR$/BasicJava.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_1_JavaBasic1/example1/example1.iml" filepath="$PROJECT_DIR$/Course_1_JavaBasic1/example1/example1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_2_JavaBasic2/example2/example2.iml" filepath="$PROJECT_DIR$/Course_2_JavaBasic2/example2/example2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_3_Workshop/example3/example3.iml" filepath="$PROJECT_DIR$/Course_3_Workshop/example3/example3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_4_JUnit/example4/example4.iml" filepath="$PROJECT_DIR$/Course_4_JUnit/example4/example4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_5_WebDriver1/example5/example5.iml" filepath="$PROJECT_DIR$/Course_5_WebDriver1/example5/example5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_1_JavaBasic1/homework1/homework1.iml" filepath="$PROJECT_DIR$/Course_1_JavaBasic1/homework1/homework1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_2_JavaBasic2/homework2/homework2.iml" filepath="$PROJECT_DIR$/Course_2_JavaBasic2/homework2/homework2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_3_Workshop/homework3/homework3.iml" filepath="$PROJECT_DIR$/Course_3_Workshop/homework3/homework3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_4_JUnit/homework4/homework4.iml" filepath="$PROJECT_DIR$/Course_4_JUnit/homework4/homework4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_5_WebDriver1/homework5/homework5.iml" filepath="$PROJECT_DIR$/Course_5_WebDriver1/homework5/homework5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_1_JavaBasic1/practice1/practice1.iml" filepath="$PROJECT_DIR$/Course_1_JavaBasic1/practice1/practice1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_2_JavaBasic2/practice2/practice2.iml" filepath="$PROJECT_DIR$/Course_2_JavaBasic2/practice2/practice2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_3_Workshop/practice3/practice3.iml" filepath="$PROJECT_DIR$/Course_3_Workshop/practice3/practice3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_4_JUnit/practice4/practice4.iml" filepath="$PROJECT_DIR$/Course_4_JUnit/practice4/practice4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Course_5_WebDriver1/practice5/practice5.iml" filepath="$PROJECT_DIR$/Course_5_WebDriver1/practice5/practice5.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/Course_1_JavaBasic1/course1" />
+      <excludeFolder url="file://$MODULE_DIR$/Course_2_JavaBasic2/course2" />
+      <excludeFolder url="file://$MODULE_DIR$/Course_3_Workshop/course3" />
+      <excludeFolder url="file://$MODULE_DIR$/Course_4_JUnit/course4" />
+      <excludeFolder url="file://$MODULE_DIR$/Course_5_WebDriver1/course5" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
