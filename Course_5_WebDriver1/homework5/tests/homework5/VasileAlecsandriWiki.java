@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,7 +38,7 @@ public class VasileAlecsandriWiki {
 
         waitTenSec.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a[href*='wikipedia.org/wiki/Vasile_Alecsandri']")));
         chrome.findElement(By.xpath("//*[@id='rso']/div/div/div/div/h3/a[@href[contains(., 'ro.wikipedia.org')]]")).click();
-//        waitTenSec.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title[^='Vasile Alecsandri']")));
+//        waitTenSec.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#firstHeading^='Vasile Alecsandri']")));
     }
 
 //    Close tab and quit Chrome Driver

@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Course_3_Workshop/course3" />
       <excludeFolder url="file://$MODULE_DIR$/Course_4_JUnit/course4" />
       <excludeFolder url="file://$MODULE_DIR$/Course_5_WebDriver1/course5" />
+      <excludeFolder url="file://$MODULE_DIR$/Course_6_WebDriver2/course6" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
