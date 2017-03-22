@@ -1,6 +1,7 @@
 package gmail;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -100,11 +101,12 @@ public class SendGmail {
         new Actions(driver).moveToElement(driver.findElement(By.xpath("//*[@class='wO nr l1']")))
                 .click()
                 .sendKeys(recipients)
+                .sendKeys(Keys.ENTER)
                 .build()
                 .perform();
     }
 
-    static void fillSubject(String subject){
+    static void fillSubject(String subject) {
         waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[@name='subjectbox' and @placeholder='Subiect' or @placeholder='Subject']")));
 
         new Actions(driver)
@@ -115,12 +117,12 @@ public class SendGmail {
                 .perform();
     }
 
-    static void changeFont(){
+    static void changeFont() {
 
         waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']")));
 
         if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']"))
-                .getAttribute("aria-expanded").equalsIgnoreCase("true")){
+                .getAttribute("aria-expanded").equalsIgnoreCase("true")) {
             waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip,'Font ')]")));
 
             new Actions(driver)
@@ -132,7 +134,7 @@ public class SendGmail {
                     .perform();
 
         } else if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']"))
-                .getAttribute("aria-expanded").equalsIgnoreCase("true")){
+                .getAttribute("aria-expanded").equalsIgnoreCase("true")) {
 
             new Actions(driver)
                     .moveToElement(driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']")))
@@ -154,14 +156,14 @@ public class SendGmail {
 
     }
 
-    static void fillEmail(String body){
+    static void fillEmail(String body) {
         new Actions(driver).moveToElement(driver.findElement(By.xpath("//*[@aria-label='Corpul mesajului' or @aria-label='Message Body']")))
                 .sendKeys(body)
                 .build()
                 .perform();
     }
 
-    static void sendEmail(){
+    static void sendEmail() {
 
         new Actions(driver)
                 .moveToElement(driver.findElement(By.xpath("//*[@role='button' and contains(@aria-label, 'Trimite') or contains(@aria-label, 'Send')]")))
@@ -170,22 +172,34 @@ public class SendGmail {
                 .perform();
     }
 
-    static void refresh(){
+    static void refresh() {
+        String firstID = driver.findElement(By.xpath("//*[@role='main']//*/tbody/tr[1]")).getAttribute("id");
 
-        new Actions(driver)
-                .moveToElement(driver.findElement(By.xpath("//*[@role='button' and contains(@aria-label, 'Actualizează') or contains(@aria-label, 'Refresh')]")))
-                .click()
-                .build()
-                .perform();
+        boolean ref = false;
+
+        while (!ref) {
+            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@role='main']//*/tbody/tr[1]")));
+            System.out.println(ref);
+
+            new Actions(driver)
+                    .moveToElement(driver.findElement(By.xpath("//*[contains(@aria-label, 'Actualizează') or contains(@aria-label, 'Refresh')]")))
+                    .click()
+                    .build()
+                    .perform();
+
+            if (driver.findElement(By.xpath("//*[@role='main']//*/tbody/tr[1]")).getAttribute("id").equalsIgnoreCase(firstID)) {
+                ref = true;
+            }
+        }
+
     }
 
-    static void
 
 
     public static void main(String[] args) {
         String user = "web.driver.hw6.ovi";
         String pass = "Homework6";
-        String subject = String.format("Date %s. Testing & finding BUGS! Ovidiu Luchian", date );
+        String subject = String.format("Date %s. Testing & finding BUGS! Ovidiu Luchian", date);
 
         openChrome();
         loginGmail(user, pass);
@@ -193,11 +207,11 @@ public class SendGmail {
         pressCompose();
 
         fillToBox(user + "@gmail.com");
-        fillSubject( subject );
+        fillSubject(subject);
         changeFont();
         fillEmail("length is 4");
         sendEmail();
-
+        refresh();
 
 
 //        logoutGmail();
