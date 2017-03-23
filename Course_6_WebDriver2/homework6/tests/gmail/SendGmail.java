@@ -119,9 +119,9 @@ public class SendGmail {
 
     static void changeFont() {
 
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']")));
+        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']")));
 
-        if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']"))
+        if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']"))
                 .getAttribute("aria-expanded").equalsIgnoreCase("true")) {
             waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip,'Font ')]")));
 
@@ -133,11 +133,11 @@ public class SendGmail {
                     .build()
                     .perform();
 
-        } else if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']"))
+        } else if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']"))
                 .getAttribute("aria-expanded").equalsIgnoreCase("true")) {
 
             new Actions(driver)
-                    .moveToElement(driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'formatting')]/div[@role='button']")))
+                    .moveToElement(driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']")))
                     .click()
                     .build()
                     .perform();
@@ -172,29 +172,41 @@ public class SendGmail {
                 .perform();
     }
 
-    static void refresh() {
-        String firstID = driver.findElement(By.xpath("//*[@role='main']//*/tbody/tr[1]")).getAttribute("id");
+    static boolean refresh() {
+        String firstID;
+        String secondID;
+
+        firstID = driver.findElement(By.xpath("//*/a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).getAttribute("aria-label");
 
         boolean ref = false;
 
         while (!ref) {
-            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@role='main']//*/tbody/tr[1]")));
-            System.out.println(ref);
-
-            new Actions(driver)
-                    .moveToElement(driver.findElement(By.xpath("//*[contains(@aria-label, 'Actualizează') or contains(@aria-label, 'Refresh')]")))
-                    .click()
-                    .build()
-                    .perform();
-
-            if (driver.findElement(By.xpath("//*[@role='main']//*/tbody/tr[1]")).getAttribute("id").equalsIgnoreCase(firstID)) {
+            driver.findElement(By.xpath("//*/a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).click();
+            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@role='tabpanel']//*/tbody/tr[1]")));
+            secondID = driver.findElement(By.xpath("//*/a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).getAttribute("aria-label");
+            if (firstID.equalsIgnoreCase(secondID)) {
                 ref = true;
             }
         }
-
+        return ref;
     }
 
+    static void openLastEmail() {
+        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@gh='tl']//*[@role='tabpanel']//*/tbody/tr[1]")));
+        new Actions(driver)
+                .moveToElement(driver.findElement(By.xpath("//*[@gh='tl']//*[@role='tabpanel']//*/tbody/tr[1]")))
+                .click()
+                .build()
+                .perform();
+    }
 
+    static void moveToTrash() {
+//        waitElem.until(ExpectedConditions.refreshed())
+        new Actions(driver).moveToElement(driver.findElement(By.xpath("//*[@aria-label='Move to']")))
+                .click()
+                .build()
+                .perform();
+    }
 
     public static void main(String[] args) {
         String user = "web.driver.hw6.ovi";
@@ -212,6 +224,9 @@ public class SendGmail {
         fillEmail("length is 4");
         sendEmail();
         refresh();
+        openLastEmail();
+
+        moveToTrash();
 
 
 //        logoutGmail();
