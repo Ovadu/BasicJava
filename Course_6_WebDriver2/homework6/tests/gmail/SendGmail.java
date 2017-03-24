@@ -1,13 +1,17 @@
 package gmail;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -28,30 +32,29 @@ public class SendGmail {
         waitElem = new WebDriverWait(driver, 20);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
+
+        System.out.println("openChrome - Successful");
     }
 
     static void closeDriver() {
         driver.manage().deleteAllCookies();
         driver.quit();
+
+        System.out.println("closeDriver - Successful");
     }
 
     static void loginGmail(String user, String passwd) {
         driver.get("https://mail.google.com");
 
-        if (ExpectedConditions.presenceOfElementLocated(By.id("Email")) != null) {
-            //If correct user is in the email display element, insert password.
-            fillUser(user);
-            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/input[@id='Passwd']")));
-            fillPassword(passwd);
-        } else if (ExpectedConditions.presenceOfElementLocated(By.id("Passwd")) != null) {
-            //If no user is entered in the email display element, type user.
-            fillPassword(passwd);
-        }
+        fillUser(user);
+        fillPassword(passwd);
 
+        System.out.println("loginGmail - Successful");
     }
 
     static void fillUser(String user) {
         try {
+            waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*/input[@id='Email']")));
             driver.findElement(By.xpath("//*/input[@id='Email']")).clear();
             driver.findElement(By.xpath("//*/input[@id='Email']")).sendKeys(user);
             driver.findElement(By.xpath("//*/input[@id='next']")).click();
@@ -60,13 +63,15 @@ public class SendGmail {
             t.printStackTrace();
         }
 
-
+        System.out.println("fillUser - Successful");
     }
 
     static void fillPassword(String passwd) {
         try {
+            waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*/input[@id='Passwd']")));
             driver.findElement(By.xpath("//*/input[@id='Passwd']")).clear();
             driver.findElement(By.xpath("//*/input[@id='Passwd']")).sendKeys(passwd);
+
             if (driver.findElement(By.xpath("//*/input[@id='PersistentCookie']")).isSelected()) {
                 //Uncheck "Remember Me" check;box.
                 driver.findElement(By.xpath("//*/input[@id='PersistentCookie']")).click();
@@ -77,159 +82,238 @@ public class SendGmail {
             t.printStackTrace();
         }
 
+        System.out.println("fillPassword - Successful");
     }
 
     static void logoutGmail() {
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/div[@role='banner']")));
-        driver.findElement(By.xpath("//*/div[@role='banner']//*/a[contains(@title,'Cont Google:') or contains(@title,'Google Account:')]")).click();
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath
-                ("//*/div[@role='banner']//*/a[contains(@title,'Cont Google:') or contains(@title,'Google Account:') and area-expanded='true']")));
-        driver.findElement(By.xpath("//*/div[@role='banner']//*[text()='Deconectați-vă' or text()='Sign out']")).click();
+        String googleAccount = "//*/div[@role='banner']//*/a[contains(@title,'Cont Google:') or contains(@title,'Google Account:')]";
+        String signOutButton = "//*/div[@role='banner']//*[text()='Deconectați-vă' or text()='Sign out']";
 
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(googleAccount)));
+
+        waitElem.until(ExpectedConditions.attributeContains(By.xpath(googleAccount), "area-expanded", "true"));
+        driver.findElement(By.xpath(signOutButton)).click();
+
+        try {
+            Alert alert = driver.switchTo().alert();
+            alert.accept();
+        } catch (Throwable t) {
+
+        }
+
+        System.out.println("logoutGmail - Successful");
     }
 
     static void pressCompose() {
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@class='nM']//*/div[text()='COMPOSE' or text()='SCRIE']")));
-        driver.findElement(By.xpath("//*[@class='nM']//*/div[text()='COMPOSE' or text()='SCRIE']")).click();
+        String composeButton = "//*[@class='nM']//*/div[text()='COMPOSE' or text()='SCRIE']";
+
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(composeButton)));
+        driver.findElement(By.xpath(composeButton)).click();
+
+        System.out.println("pressCompose - Successful");
     }
 
     static void fillToBox(String recipients) {
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[text()='Destinatari' or text()='Recipients']")));
-        driver.findElement(By.xpath("//*[contains(@class, 'wO nr')]")).click();
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@class='wO nr l1']")));
+        String toBoxClicked = "//*[@enctype='multipart/form-data']//*[@aria-label='To']";
 
-        new Actions(driver).moveToElement(driver.findElement(By.xpath("//*[@class='wO nr l1']")))
-                .click()
+        //Fill to box
+        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath(toBoxClicked)));
+        new Actions(driver)
+                .click(driver.findElement(By.xpath(toBoxClicked)))
                 .sendKeys(recipients)
                 .sendKeys(Keys.ENTER)
                 .build()
                 .perform();
+
+        System.out.println("fillToBox - Successful");
     }
 
     static void fillSubject(String subject) {
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[@name='subjectbox' and @placeholder='Subiect' or @placeholder='Subject']")));
+        String subjectBox = "//*[@enctype='multipart/form-data']//*[@name='subjectbox' and @placeholder='Subiect' or @placeholder='Subject']";
 
+        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath(subjectBox)));
         new Actions(driver)
-                .moveToElement(driver.findElement(By.xpath("//*/table//*[@name='subjectbox' and @placeholder='Subiect' or @placeholder='Subject']")))
-                .click()
+                .click(driver.findElement(By.xpath(subjectBox)))
                 .sendKeys(subject)
                 .build()
                 .perform();
+
+        System.out.println("fillSubject - Successful");
     }
 
     static void changeFont() {
+        String formatButton = "//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]//*[@role='button']";
+        String fontOption = "//*/table//*[contains(@data-tooltip,'Font ')]";
 
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']")));
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(formatButton)));
 
-        if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']"))
-                .getAttribute("aria-expanded").equalsIgnoreCase("true")) {
-            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip,'Font ')]")));
-
-            new Actions(driver)
-                    .moveToElement(driver.findElement(By.xpath("//*[contains(@data-tooltip,'Font ')]")))
-                    .click()
-                    .moveToElement(driver.findElement(By.xpath("//*[contains(text(),'Comic Sans MS')]")))
-                    .click()
-                    .build()
-                    .perform();
-
-        } else if (driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']"))
-                .getAttribute("aria-expanded").equalsIgnoreCase("true")) {
+        if (driver.findElement(By.xpath(formatButton)).getAttribute("aria-expanded").equalsIgnoreCase("false")) {
 
             new Actions(driver)
-                    .moveToElement(driver.findElement(By.xpath("//*/table//*[contains(@data-tooltip, 'formatare') or contains(@data-tooltip, 'Formatting')]/div[@role='button']")))
-                    .click()
-                    .build()
-                    .perform();
-
-            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*/table//*[contains(@data-tooltip,'Font ')]")));
-
-            new Actions(driver)
-                    .moveToElement(driver.findElement(By.xpath("//*[contains(@data-tooltip,'Font ')]")))
-                    .click()
-                    .moveToElement(driver.findElement(By.xpath("//*[contains(text(),'Comic Sans MS')]")))
-                    .click()
+                    .click(driver.findElement(By.xpath(formatButton)))
                     .build()
                     .perform();
         }
 
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(fontOption)));
+        new Actions(driver)
+                .click(driver.findElement(By.xpath(fontOption)))
+                .click(driver.findElement(By.xpath("//*[contains(text(),'Comic Sans')]")))
+                .build()
+                .perform();
 
+        System.out.println("changeFont - Successful");
     }
 
     static void fillEmail(String body) {
-        new Actions(driver).moveToElement(driver.findElement(By.xpath("//*[@aria-label='Corpul mesajului' or @aria-label='Message Body']")))
+        String messageBody = "//*[@aria-label='Corpul mesajului' or @aria-label='Message Body']";
+
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(messageBody)));
+        new Actions(driver).moveToElement(driver.findElement(By.xpath(messageBody)))
                 .sendKeys(body)
                 .build()
                 .perform();
     }
 
     static void sendEmail() {
+        String sendButton = "//*[@role='button' and contains(@aria-label, 'Trimite') or contains(@aria-label, 'Send')]";
 
         new Actions(driver)
-                .moveToElement(driver.findElement(By.xpath("//*[@role='button' and contains(@aria-label, 'Trimite') or contains(@aria-label, 'Send')]")))
+                .moveToElement(driver.findElement(By.xpath(sendButton)))
                 .click()
                 .build()
                 .perform();
     }
 
-    static boolean refresh() {
-        String firstID;
-        String secondID;
+    static void takeScreenShot(String ssPath) {
+        File scrShot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
-        firstID = driver.findElement(By.xpath("//*/a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).getAttribute("aria-label");
-
-        boolean ref = false;
-
-        while (!ref) {
-            driver.findElement(By.xpath("//*/a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).click();
-            waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@role='tabpanel']//*/tbody/tr[1]")));
-            secondID = driver.findElement(By.xpath("//*/a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).getAttribute("aria-label");
-            if (firstID.equalsIgnoreCase(secondID)) {
-                ref = true;
-            }
-        }
-        return ref;
+        try {
+            FileUtils.copyFile(scrShot, new File(ssPath));
+        } catch (IOException e) {}
     }
+    
+    static void uploadFile(String filePath){
+        String attachButton = "//*[@aria-label='Attach files' and @role='button']";
 
-    static void openLastEmail() {
-        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@gh='tl']//*[@role='tabpanel']//*/tbody/tr[1]")));
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(attachButton)));
+        driver.findElement(By.xpath(attachButton)).click();
+
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(filePath), null);
+
+        try{
+            Robot robot = new Robot();
+            robot.delay(2000);
+            //robot.keyPress(KeyEvent.VK_ENTER);
+            //robot.keyRelease(KeyEvent.VK_ENTER);
+            robot.keyPress(KeyEvent.VK_CONTROL);
+            robot.keyPress(KeyEvent.VK_V);
+            robot.keyRelease(KeyEvent.VK_V);
+            robot.keyRelease(KeyEvent.VK_CONTROL);
+            robot.delay(2000);
+            robot.keyPress(KeyEvent.VK_ENTER);
+            robot.keyRelease(KeyEvent.VK_ENTER);
+            robot.delay(3000);
+        }catch(AWTException e){}
+
+
+    }
+    
+
+//    static boolean refreshInbox() {
+//        String inboxButton = "///*a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]";
+//        String firstID;
+//        String secondID;
+//
+//
+//        firstID = driver.findElement(By.xpath("///*a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).getAttribute("aria-label");
+//
+//        boolean ref = false;
+//
+//        while (!ref) {
+//            waitElem.until(ExpectedConditions.attributeContains(driver.findElement(By.xpath(inboxButton)),))));
+//            driver.findElement(By.xpath(inboxButton)).click();
+//            secondID = driver.findElement(By.xpath("///*a[contains(@href, 'mail.google.com') and contains(@aria-label, 'Inbox')]")).getAttribute("aria-label");
+//            if (firstID.equalsIgnoreCase(secondID)) {
+//                ref = true;
+//            }
+//        }
+//        return ref;
+//    }
+
+    static void openLatestEmail() {
+        String latestEmail = "//*[@gh='tl']//*[@role='tabpanel']//*/tbody/tr[1]";
+
+        waitElem.until(ExpectedConditions.presenceOfElementLocated(By.xpath(latestEmail)));
         new Actions(driver)
-                .moveToElement(driver.findElement(By.xpath("//*[@gh='tl']//*[@role='tabpanel']//*/tbody/tr[1]")))
-                .click()
+                .click(driver.findElement(By.xpath(latestEmail)))
                 .build()
                 .perform();
     }
 
     static void moveToTrash() {
-//        waitElem.until(ExpectedConditions.refreshed())
-        new Actions(driver).moveToElement(driver.findElement(By.xpath("//*[@aria-label='Move to']")))
+        String moveToButton = "//*[@aria-label='Move to']";
+
+        new Actions(driver).moveToElement(driver.findElement(By.xpath(moveToButton)))
                 .click()
                 .build()
                 .perform();
     }
 
+
+    private static String calcFontSizes() {
+        String fontSizeButton = "//*[@role='toolbar' and contains(@aria-label, 'Formatting')]//*[contains(@aria-label, 'Size')]";
+        String fontSizePopup = "//*[@class='J-M J-M-ayU fx']";
+
+
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(fontSizeButton)));
+        driver.findElement(By.xpath(fontSizeButton)).click();
+
+        waitElem.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(fontSizePopup)));
+        WebElement fontSizeList = driver.findElement(By.xpath(fontSizePopup));
+        String fontSizes = (((JavascriptExecutor)driver).executeScript("return arguments[0].children.length;", driver.findElement(By.xpath(fontSizePopup)))).toString();
+
+        return fontSizes;
+    }
+
+
     public static void main(String[] args) {
+//      ---------------------------------------------------------------------------------------------------
+//      Enter your name in the boxes below:
+//      ---------------------------------------------------------------------------------------------------
+        String fName = "Ovidiu";
+        String lName = "Luchian";
+//      ---------------------------------------------------------------------------------------------------
+//      Enter your email credentials below:
+//      ---------------------------------------------------------------------------------------------------
         String user = "web.driver.hw6.ovi";
         String pass = "Homework6";
-        String subject = String.format("Date %s. Testing & finding BUGS! Ovidiu Luchian", date);
+
+        String subject = String.format("Date %s. Testing & finding BUGS! %s %s", date, fName, lName);
+        String screenShotPath = String.format("C:\\Users\\%s\\Desktop\\SS\\screenshot_webdriver.jpg", String.join(".", fName.toLowerCase(), lName.toLowerCase()));
 
         openChrome();
         loginGmail(user, pass);
-
         pressCompose();
 
         fillToBox(user + "@gmail.com");
         fillSubject(subject);
         changeFont();
-        fillEmail("length is 4");
-        sendEmail();
-        refresh();
-        openLastEmail();
 
-        moveToTrash();
+        takeScreenShot(screenShotPath);
+        uploadFile(screenShotPath);
 
+
+        fillEmail(calcFontSizes());
+//        sendEmail();
+
+//        refreshInbox();
+//        openLatestEmail();
+
+//        moveToTrash(); /*NOT WORKING YET :)*/
 
 //        logoutGmail();
 //        closeDriver();
     }
+
 }
